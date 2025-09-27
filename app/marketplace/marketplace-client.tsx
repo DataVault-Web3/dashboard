@@ -1,23 +1,40 @@
+"use client";
 
-'use client'
-
-import { useState } from 'react'
-import Link from 'next/link'
-import { useWeb3Auth } from '@/hooks/use-web3-auth'
-import { ConnectWalletButton } from '@/components/connect-wallet-button'
-import { DataPreviewDialog } from '@/components/data-preview-dialog'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  Database, 
-  Search, 
-  Filter, 
-  ShoppingCart, 
-  Users, 
-  TrendingUp, 
+import { useState } from "react";
+import Link from "next/link";
+import { useWeb3Auth } from "@/hooks/use-web3-auth";
+import { ConnectWalletButton } from "@/components/connect-wallet-button";
+import { DataPreviewDialog } from "@/components/data-preview-dialog";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { withPaymentInterceptor} from "x402-axios"
+import { createPaymentInterceptor } from "@/lib/payment-interceptor";
+import { createWalletClient, http } from "viem";
+import { polygonAmoy } from "viem/chains";
+import { useWalletClient } from "wagmi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Database,
+  Search,
+  Filter,
+  ShoppingCart,
+  Users,
+  TrendingUp,
   Heart,
   MapPin,
   Calendar,
@@ -25,159 +42,269 @@ import {
   Eye,
   Download,
   Star,
-  IndianRupee
-} from 'lucide-react'
+  IndianRupee,
+} from "lucide-react";
 
 const platforms = [
   {
-    id: 'amazon',
-    name: 'Amazon India',
-    logo: '🛒',
-    color: 'bg-orange-500',
-    description: 'World\'s largest e-commerce platform with diverse product categories',
-    dataPoints: '2.5M+',
-    categories: ['Electronics', 'Fashion', 'Books', 'Home & Garden'],
+    id: "amazon",
+    name: "Amazon India",
+    logo: "🛒",
+    color: "bg-orange-500",
+    description:
+      "World's largest e-commerce platform with diverse product categories",
+    dataPoints: "2.5M+",
+    categories: ["Electronics", "Fashion", "Books", "Home & Garden"],
     datasets: [
       {
-        id: 1,
-        title: 'Purchase History Analytics',
-        description: 'Detailed purchase patterns, product preferences, and seasonal buying trends',
+        id: "68d84c4c7302daa451b6a333",
+        title: "Purchase History Analytics",
+        description:
+          "Detailed purchase patterns, product preferences, and seasonal buying trends",
         price: 899,
         dataPoints: 125000,
-        timeRange: 'Last 12 months',
-        category: 'Purchase Behavior',
+        timeRange: "Last 12 months",
+        category: "Purchase Behavior",
         rating: 4.8,
-        buyers: 324
+        buyers: 324,
       },
       {
         id: 2,
-        title: 'Product Search Analytics',
-        description: 'Search queries, click-through rates, and product discovery patterns',
+        title: "Product Search Analytics",
+        description:
+          "Search queries, click-through rates, and product discovery patterns",
         price: 649,
         dataPoints: 85000,
-        timeRange: 'Last 6 months',
-        category: 'User Behavior',
+        timeRange: "Last 6 months",
+        category: "User Behavior",
         rating: 4.6,
-        buyers: 187
-      }
-    ]
+        buyers: 187,
+      },
+    ],
   },
   {
-    id: 'flipkart',
-    name: 'Flipkart',
-    logo: '🛍️',
-    color: 'bg-blue-500',
-    description: 'India\'s leading e-commerce platform with strong mobile commerce focus',
-    dataPoints: '1.8M+',
-    categories: ['Electronics', 'Fashion', 'Home', 'Mobile'],
+    id: "flipkart",
+    name: "Flipkart",
+    logo: "🛍️",
+    color: "bg-blue-500",
+    description:
+      "India's leading e-commerce platform with strong mobile commerce focus",
+    dataPoints: "1.8M+",
+    categories: ["Electronics", "Fashion", "Home", "Mobile"],
     datasets: [
       {
         id: 3,
-        title: 'Mobile Shopping Behavior',
-        description: 'Mobile app usage patterns, cart abandonment, and purchase completion rates',
+        title: "Mobile Shopping Behavior",
+        description:
+          "Mobile app usage patterns, cart abandonment, and purchase completion rates",
         price: 749,
         dataPoints: 95000,
-        timeRange: 'Last 9 months',
-        category: 'Mobile Commerce',
+        timeRange: "Last 9 months",
+        category: "Mobile Commerce",
         rating: 4.7,
-        buyers: 256
+        buyers: 256,
       },
       {
         id: 4,
-        title: 'Big Billion Days Analytics',
-        description: 'Festival shopping patterns, discount sensitivity, and bulk purchase behavior',
+        title: "Big Billion Days Analytics",
+        description:
+          "Festival shopping patterns, discount sensitivity, and bulk purchase behavior",
         price: 1299,
         dataPoints: 185000,
-        timeRange: 'Last 24 months',
-        category: 'Seasonal Trends',
+        timeRange: "Last 24 months",
+        category: "Seasonal Trends",
         rating: 4.9,
-        buyers: 445
-      }
-    ]
+        buyers: 445,
+      },
+    ],
   },
   {
-    id: 'myntra',
-    name: 'Myntra',
-    logo: '👗',
-    color: 'bg-pink-500',
-    description: 'India\'s top fashion and lifestyle platform with curated brand selection',
-    dataPoints: '950K+',
-    categories: ['Fashion', 'Beauty', 'Lifestyle', 'Accessories'],
+    id: "myntra",
+    name: "Myntra",
+    logo: "👗",
+    color: "bg-pink-500",
+    description:
+      "India's top fashion and lifestyle platform with curated brand selection",
+    dataPoints: "950K+",
+    categories: ["Fashion", "Beauty", "Lifestyle", "Accessories"],
     datasets: [
       {
         id: 5,
-        title: 'Fashion Trend Analytics',
-        description: 'Style preferences, brand loyalty, size distribution, and seasonal fashion trends',
+        title: "Fashion Trend Analytics",
+        description:
+          "Style preferences, brand loyalty, size distribution, and seasonal fashion trends",
         price: 1099,
         dataPoints: 120000,
-        timeRange: 'Last 18 months',
-        category: 'Fashion Insights',
+        timeRange: "Last 18 months",
+        category: "Fashion Insights",
         rating: 4.8,
-        buyers: 312
-      }
-    ]
+        buyers: 312,
+      },
+    ],
   },
   {
-    id: 'nykaa',
-    name: 'Nykaa',
-    logo: '💄',
-    color: 'bg-purple-500',
-    description: 'Premier beauty and wellness platform with expert curation',
-    dataPoints: '650K+',
-    categories: ['Beauty', 'Skincare', 'Wellness', 'Personal Care'],
+    id: "nykaa",
+    name: "Nykaa",
+    logo: "💄",
+    color: "bg-purple-500",
+    description: "Premier beauty and wellness platform with expert curation",
+    dataPoints: "650K+",
+    categories: ["Beauty", "Skincare", "Wellness", "Personal Care"],
     datasets: [
       {
         id: 6,
-        title: 'Beauty Product Preferences',
-        description: 'Skincare routines, brand preferences, ingredient analysis, and review patterns',
+        title: "Beauty Product Preferences",
+        description:
+          "Skincare routines, brand preferences, ingredient analysis, and review patterns",
         price: 799,
         dataPoints: 75000,
-        timeRange: 'Last 12 months',
-        category: 'Beauty & Wellness',
+        timeRange: "Last 12 months",
+        category: "Beauty & Wellness",
         rating: 4.5,
-        buyers: 198
-      }
-    ]
-  }
-]
+        buyers: 198,
+      },
+    ],
+  },
+];
 
 const categories = [
-  'All Categories',
-  'Purchase Behavior',
-  'User Behavior',
-  'Mobile Commerce',
-  'Seasonal Trends',
-  'Fashion Insights',
-  'Beauty & Wellness'
-]
+  "All Categories",
+  "Purchase Behavior",
+  "User Behavior",
+  "Mobile Commerce",
+  "Seasonal Trends",
+  "Fashion Insights",
+  "Beauty & Wellness",
+];
 
 export default function MarketplaceClient() {
-  const { address, isConnected } = useWeb3Auth()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('All Categories')
-  const [selectedPlatform, setSelectedPlatform] = useState('all')
-  const [previewDataset, setPreviewDataset] = useState<any>(null)
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const { address, isConnected } = useWeb3Auth();
+  const { data: walletClient } = useWalletClient();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedPlatform, setSelectedPlatform] = useState("all");
+  const [previewDataset, setPreviewDataset] = useState<any>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [purchaseStatus, setPurchaseStatus] = useState<{
+    type: "success" | "error" | "info";
+    message: string;
+  } | null>(null);
 
-  const filteredPlatforms = platforms.filter(platform => {
-    if (selectedPlatform !== 'all' && platform.id !== selectedPlatform) return false
-    if (searchQuery && !platform.name.toLowerCase().includes(searchQuery.toLowerCase())) return false
-    return true
-  })
+  const filteredPlatforms = platforms.filter((platform) => {
+    if (selectedPlatform !== "all" && platform.id !== selectedPlatform)
+      return false;
+    if (
+      searchQuery &&
+      !platform.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+      return false;
+    return true;
+  });
 
-  const allDatasets = platforms.flatMap(platform => 
-    platform.datasets.map(dataset => ({
-      ...dataset,
-      platform: platform.name,
-      platformId: platform.id,
-      platformLogo: platform.logo,
-      platformColor: platform.color
-    }))
-  ).filter(dataset => {
-    if (selectedCategory !== 'All Categories' && dataset.category !== selectedCategory) return false
-    if (searchQuery && !dataset.title.toLowerCase().includes(searchQuery.toLowerCase())) return false
-    return true
-  })
+  const allDatasets = platforms
+    .flatMap((platform) =>
+      platform.datasets.map((dataset) => ({
+        ...dataset,
+        platform: platform.name,
+        platformId: platform.id,
+        platformLogo: platform.logo,
+        platformColor: platform.color,
+      }))
+    )
+    .filter((dataset) => {
+      if (
+        selectedCategory !== "All Categories" &&
+        dataset.category !== selectedCategory
+      )
+        return false;
+      if (
+        searchQuery &&
+        !dataset.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+        return false;
+      return true;
+    });
+
+  const handlePurchase = async (dataset: any) => {
+    if (!walletClient) {
+      setPurchaseStatus({
+        type: "error",
+        message: "Wallet not connected. Please connect your wallet first.",
+      });
+      return;
+    }
+
+    setIsPurchasing(true);
+    setPurchaseStatus({
+      type: "info",
+      message: `Initiating purchase for ${dataset.title}...`,
+    });
+
+    try {
+      // Create viem wallet client from wagmi wallet client
+      const viemClient = createWalletClient({
+        account: walletClient.account,
+        chain: polygonAmoy,
+        transport: http(),
+      }) as any; // Type assertion for x402 compatibility
+
+      // Create axios instance with payment interceptor
+      console.log('Creating API instance with payment interceptor...');
+      const api = withPaymentInterceptor(
+        axios.create({
+          baseURL: '/api/proxy', // Use Next.js API proxy to avoid CORS issues
+        }),
+        walletClient as any,
+      );
+      console.log('API instance created:', api);
+
+      setPurchaseStatus({
+        type: "info",
+        message: "Processing payment...",
+      });
+
+      // Make the payment request
+      const response = await api.get(`/datasets/${dataset.id}/download`);
+
+      setPurchaseStatus({
+        type: "success",
+        message: `Successfully purchased ${dataset.title}! Payment processed.`,
+      });
+
+      console.log("Purchase successful:", {
+        dataset: dataset.title,
+        content: response.data,
+      });
+    } catch (error) {
+      console.error("Purchase failed:", error);
+      
+      let errorMessage = `Failed to purchase ${dataset.title}. Please try again.`;
+      
+      if (error instanceof Error) {
+        if (error.message.includes('rejected')) {
+          errorMessage = 'Payment signature was rejected. Please try again.';
+        } else if (error.message.includes('Invalid payment request')) {
+          errorMessage = 'Invalid payment request. Please contact support.';
+        } else if (error.message.includes('Wallet not connected')) {
+          errorMessage = 'Wallet not connected. Please connect your wallet first.';
+        } else {
+          errorMessage = `Purchase failed: ${error.message}`;
+        }
+      }
+      
+      setPurchaseStatus({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      setIsPurchasing(false);
+      // Clear status after 5 seconds
+      setTimeout(() => {
+        setPurchaseStatus(null);
+      }, 5000);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -189,7 +316,9 @@ export default function MarketplaceClient() {
               <Database className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">DataVault</span>
-            <Badge variant="secondary" className="ml-2">Marketplace</Badge>
+            <Badge variant="secondary" className="ml-2">
+              Marketplace
+            </Badge>
           </Link>
           <div className="flex items-center space-x-4">
             {isConnected && (
@@ -203,13 +332,42 @@ export default function MarketplaceClient() {
       </header>
 
       <div className="container mx-auto max-w-7xl px-4 py-8">
+        {/* Status Messages */}
+        {purchaseStatus && (
+          <div
+            className={`mb-6 rounded-lg p-4 ${
+              purchaseStatus.type === "success"
+                ? "bg-green-50 border border-green-200 text-green-800"
+                : purchaseStatus.type === "error"
+                ? "bg-red-50 border border-red-200 text-red-800"
+                : "bg-blue-50 border border-blue-200 text-blue-800"
+            }`}
+          >
+            <div className="flex items-center">
+              <div
+                className={`w-2 h-2 rounded-full mr-3 ${
+                  purchaseStatus.type === "success"
+                    ? "bg-green-500"
+                    : purchaseStatus.type === "error"
+                    ? "bg-red-500"
+                    : "bg-blue-500"
+                }`}
+              />
+              {purchaseStatus.message}
+            </div>
+          </div>
+        )}
+
         {/* Hero Section */}
         <div className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold text-gray-900">Data Marketplace</h1>
+          <h1 className="mb-4 text-4xl font-bold text-gray-900">
+            Data Marketplace
+          </h1>
           <p className="mx-auto max-w-2xl text-xl text-gray-600 mb-8">
-            Explore and purchase verified consumer data from India's leading e-commerce platforms
+            Explore and purchase verified consumer data from India's leading
+            e-commerce platforms
           </p>
-          
+
           {/* Search and Filters */}
           <div className="flex flex-col md:flex-row gap-4 items-center justify-center max-w-4xl mx-auto">
             <div className="relative flex-1 min-w-0">
@@ -221,26 +379,36 @@ export default function MarketplaceClient() {
                 className="pl-10"
               />
             </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
               <SelectTrigger className="w-48">
                 <Filter className="mr-2 h-4 w-4" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {categories.map(category => (
-                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+            <Select
+              value={selectedPlatform}
+              onValueChange={setSelectedPlatform}
+            >
               <SelectTrigger className="w-48">
                 <Building2 className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="All Platforms" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Platforms</SelectItem>
-                {platforms.map(platform => (
-                  <SelectItem key={platform.id} value={platform.id}>{platform.name}</SelectItem>
+                {platforms.map((platform) => (
+                  <SelectItem key={platform.id} value={platform.id}>
+                    {platform.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -249,19 +417,31 @@ export default function MarketplaceClient() {
 
         {/* Platform Overview */}
         <div className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold text-gray-900">Featured Platforms</h2>
+          <h2 className="mb-6 text-2xl font-bold text-gray-900">
+            Featured Platforms
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredPlatforms.map((platform) => (
               <Card key={platform.id} className="card-hover cursor-pointer">
                 <CardContent className="p-6 text-center">
-                  <div className={`mx-auto mb-4 h-16 w-16 rounded-lg ${platform.color} flex items-center justify-center text-2xl`}>
+                  <div
+                    className={`mx-auto mb-4 h-16 w-16 rounded-lg ${platform.color} flex items-center justify-center text-2xl`}
+                  >
                     {platform.logo}
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">{platform.name}</h3>
-                  <p className="text-sm text-gray-600 mb-3">{platform.description}</p>
+                  <h3 className="font-bold text-gray-900 mb-2">
+                    {platform.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {platform.description}
+                  </p>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">{platform.dataPoints} users</span>
-                    <Badge variant="secondary">{platform.datasets.length} datasets</Badge>
+                    <span className="text-gray-500">
+                      {platform.dataPoints} users
+                    </span>
+                    <Badge variant="secondary">
+                      {platform.datasets.length} datasets
+                    </Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -272,24 +452,32 @@ export default function MarketplaceClient() {
         {/* Available Datasets */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Available Datasets</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Available Datasets
+            </h2>
             <Badge variant="outline" className="text-sm">
               {allDatasets.length} datasets available
             </Badge>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {allDatasets.map((dataset) => (
               <Card key={dataset.id} className="card-hover">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`h-12 w-12 rounded-lg ${dataset.platformColor} flex items-center justify-center text-lg`}>
+                      <div
+                        className={`h-12 w-12 rounded-lg ${dataset.platformColor} flex items-center justify-center text-lg`}
+                      >
                         {dataset.platformLogo}
                       </div>
                       <div>
-                        <CardTitle className="text-lg">{dataset.title}</CardTitle>
-                        <p className="text-sm text-gray-600">{dataset.platform}</p>
+                        <CardTitle className="text-lg">
+                          {dataset.title}
+                        </CardTitle>
+                        <p className="text-sm text-gray-600">
+                          {dataset.platform}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 text-sm text-yellow-600">
@@ -302,18 +490,20 @@ export default function MarketplaceClient() {
                   <CardDescription className="mb-4">
                     {dataset.description}
                   </CardDescription>
-                  
+
                   <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-gray-400" />
-                      <span>{dataset.dataPoints.toLocaleString()} data points</span>
+                      <span>
+                        {dataset.dataPoints.toLocaleString()} data points
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-400" />
                       <span>{dataset.timeRange}</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between mb-4">
                     <Badge variant="outline">{dataset.category}</Badge>
                     <div className="flex items-center gap-1 text-sm text-gray-600">
@@ -321,37 +511,49 @@ export default function MarketplaceClient() {
                       {dataset.buyers} purchases
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 text-2xl font-bold text-gray-900">
                       <IndianRupee className="h-5 w-5" />
                       {dataset.price}
                     </div>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => {
-                          setPreviewDataset(dataset)
-                          setIsPreviewOpen(true)
+                          setPreviewDataset(dataset);
+                          setIsPreviewOpen(true);
                         }}
                       >
                         <Eye className="mr-2 h-4 w-4" />
                         Preview
                       </Button>
-                      <Button 
-                        className="bg-gradient-primary hover:opacity-90" 
+                      <Button
+                        className="bg-gradient-primary hover:opacity-90"
                         size="sm"
+                        disabled={isPurchasing || !isConnected}
                         onClick={() => {
                           if (isConnected) {
-                            alert(`Purchase initiated for ${dataset.title}\n\nPrice: ₹${dataset.price}\nData Points: ${dataset.dataPoints.toLocaleString()}\n\nRedirecting to secure payment gateway...`)
+                            handlePurchase(dataset);
                           } else {
-                            alert('Please connect your wallet to purchase datasets')
+                            alert(
+                              "Please connect your wallet to purchase datasets"
+                            );
                           }
                         }}
                       >
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        Purchase
+                        {isPurchasing ? (
+                          <>
+                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            Purchase
+                          </>
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -363,7 +565,9 @@ export default function MarketplaceClient() {
 
         {allDatasets.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No datasets found matching your criteria</p>
+            <p className="text-gray-500">
+              No datasets found matching your criteria
+            </p>
           </div>
         )}
       </div>
@@ -377,5 +581,5 @@ export default function MarketplaceClient() {
         />
       )}
     </div>
-  )
+  );
 }
