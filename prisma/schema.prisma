@@ -1,0 +1,175 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/datavault_business_dashboard/app/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// NextAuth models
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
+  // Business specific fields
+  companyName   String?
+  contactPerson String?
+  industry      String?
+  // Relations
+  business      Business?
+  purchases     Purchase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Business marketplace models
+model Business {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  companyName   String
+  contactPerson String?
+  industry      String?
+  website       String?
+  description   String?
+  status        BusinessStatus @default(ACTIVE)
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchases     Purchase[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EcommercePlatform {
+  id          String @id @default(cuid())
+  name        String @unique
+  slug        String @unique
+  description String
+  logo        String
+  website     String
+  color       String
+  isActive    Boolean @default(true)
+  
+  dataListings DataListing[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DataCategory {
+  id          String @id @default(cuid())
+  name        String @unique
+  slug        String @unique
+  description String
+  icon        String
+  color       String
+  
+  dataListings DataListing[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DataListing {
+  id                String @id @default(cuid())
+  title            String
+  description      String
+  platformId       String
+  categoryId       String
+  price            Float
+  currency         String @default("USD")
+  dataPoints       Int
+  timeRange        String
+  updateFrequency  String
+  sampleData       Json?
+  metadata         Json?
+  isActive         Boolean @default(true)
+  
+  platform         EcommercePlatform @relation(fields: [platformId], references: [id])
+  category         DataCategory @relation(fields: [categoryId], references: [id])
+  purchases        Purchase[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Purchase {
+  id            String @id @default(cuid())
+  userId        String
+  businessId    String
+  dataListingId String
+  amount        Float
+  currency      String @default("USD")
+  status        PurchaseStatus @default(PENDING)
+  transactionId String?
+  downloadUrl   String?
+  expiresAt     DateTime?
+  
+  user          User @relation(fields: [userId], references: [id])
+  business      Business @relation(fields: [businessId], references: [id])
+  dataListing   DataListing @relation(fields: [dataListingId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BusinessStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
