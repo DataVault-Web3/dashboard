@@ -43,7 +43,7 @@ import {
   Eye,
   Download,
   Star,
-  IndianRupee,
+  DollarSign
 } from "lucide-react";
 
 const platforms = [
@@ -62,7 +62,7 @@ const platforms = [
         title: "Purchase History Analytics",
         description:
           "Detailed purchase patterns, product preferences, and seasonal buying trends",
-        price: 899,
+        price: 0.1,
         dataPoints: 125000,
         timeRange: "Last 12 months",
         category: "Purchase Behavior",
@@ -74,7 +74,7 @@ const platforms = [
         title: "Product Search Analytics",
         description:
           "Search queries, click-through rates, and product discovery patterns",
-        price: 649,
+        price: 0.1,
         dataPoints: 85000,
         timeRange: "Last 6 months",
         category: "User Behavior",
@@ -98,7 +98,7 @@ const platforms = [
         title: "Mobile Shopping Behavior",
         description:
           "Mobile app usage patterns, cart abandonment, and purchase completion rates",
-        price: 749,
+        price: 0.1,
         dataPoints: 95000,
         timeRange: "Last 9 months",
         category: "Mobile Commerce",
@@ -110,7 +110,7 @@ const platforms = [
         title: "Big Billion Days Analytics",
         description:
           "Festival shopping patterns, discount sensitivity, and bulk purchase behavior",
-        price: 1299,
+        price: 0.1,
         dataPoints: 185000,
         timeRange: "Last 24 months",
         category: "Seasonal Trends",
@@ -134,7 +134,7 @@ const platforms = [
         title: "Fashion Trend Analytics",
         description:
           "Style preferences, brand loyalty, size distribution, and seasonal fashion trends",
-        price: 1099,
+        price: 0.1,
         dataPoints: 120000,
         timeRange: "Last 18 months",
         category: "Fashion Insights",
@@ -157,7 +157,7 @@ const platforms = [
         title: "Beauty Product Preferences",
         description:
           "Skincare routines, brand preferences, ingredient analysis, and review patterns",
-        price: 799,
+        price: 0.1,
         dataPoints: 75000,
         timeRange: "Last 12 months",
         category: "Beauty & Wellness",
@@ -325,7 +325,7 @@ export default function MarketplaceClient() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
               <Database className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">DataVault</span>
+            <span className="text-xl font-bold text-gray-900">Concentra</span>
             <Badge variant="secondary" className="ml-2">
               Marketplace
             </Badge>
@@ -524,7 +524,7 @@ export default function MarketplaceClient() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 text-2xl font-bold text-gray-900">
-                      <IndianRupee className="h-5 w-5" />
+                      <DollarSign className="h-6 w-6" />
                       {dataset.price}
                     </div>
                     <div className="flex gap-2">

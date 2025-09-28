@@ -9,7 +9,7 @@ import { Providers } from '@/components/providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'DataVault Business - Privacy-First Data Marketplace',
+  title: 'Concentra Business - Privacy-First Data Marketplace',
   description: 'Purchase verified consumer e-commerce data with zero-knowledge privacy guarantees. Access insights from Amazon, Flipkart, Myntra and more.',
 }
 

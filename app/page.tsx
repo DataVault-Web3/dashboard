@@ -17,7 +17,7 @@ export default function HomePage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
               <Database className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">DataVault</span>
+            <span className="text-xl font-bold text-gray-900">Concentra</span>
             <Badge variant="secondary" className="ml-2">Business</Badge>
           </div>
           <div className="flex items-center space-x-4">
@@ -204,7 +204,7 @@ export default function HomePage() {
         <div className="container mx-auto max-w-6xl px-4 text-center">
           <h2 className="mb-4 text-3xl font-bold text-white">Ready to Access Consumer Intelligence?</h2>
           <p className="mb-8 text-xl text-blue-100">
-            Join leading enterprises using DataVault for data-driven decision making
+            Join leading enterprises using Concentra for data-driven decision making
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <div className="flex items-center gap-4">
@@ -228,7 +228,7 @@ export default function HomePage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
                 <Database className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-900">DataVault Business</span>
+              <span className="text-lg font-bold text-gray-900">Concentra Business</span>
             </div>
             <div className="flex items-center gap-8 text-sm text-gray-600">
               <Link href="/marketplace" className="hover:text-gray-900">Marketplace</Link>
@@ -236,7 +236,7 @@ export default function HomePage() {
               <Link href="#platforms" className="hover:text-gray-900">Data Sources</Link>
             </div>
             <div className="text-sm text-gray-500">
-              © 2024 DataVault. Built for ETHGlobal New Delhi.
+              © 2024 Concentra. Built for ETHGlobal New Delhi.
             </div>
           </div>
         </div>

@@ -92,7 +92,7 @@ export default function SignUpPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
               <Database className="h-6 w-6 text-white" />
             </div>
-            <span className="ml-2 text-2xl font-bold text-gray-900">DataVault</span>
+            <span className="ml-2 text-2xl font-bold text-gray-900">Concentra</span>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Business Account</h1>
           <p className="text-gray-600">Get access to verified consumer data insights</p>
@@ -105,7 +105,7 @@ export default function SignUpPage() {
               Business Registration
             </CardTitle>
             <CardDescription>
-              Join leading enterprises using DataVault for consumer intelligence
+              Join leading enterprises using Concentra for consumer intelligence
             </CardDescription>
           </CardHeader>
           <CardContent>

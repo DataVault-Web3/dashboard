@@ -28,8 +28,8 @@ export function Web3Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Initialize config on client side only
     const clientConfig = getDefaultConfig({
-      appName: 'DataVault Business',
-      projectId: 'hackathon-datavault-project-2024',
+      appName: 'Concentra Business',
+      projectId: 'hackathon-Concentra-project-2024',
       chains: [polygonAmoy,baseSepolia],
       ssr: false, // Disable SSR for Web3
     })

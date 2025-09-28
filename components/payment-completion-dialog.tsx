@@ -84,12 +84,7 @@ export function PaymentCompletionDialog({
 
   const handleDownload = () => {
     // Create a temporary link to download the file
-    const link = document.createElement("a");
-    link.href = content.downloadUrl;
-    link.download = `${content.name}.${content.format.toLowerCase()}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.open(`${process.env.NEXT_PUBLIC_API_BASE_URL}${content.downloadUrl}`, "_blank");
   };
 
   return (

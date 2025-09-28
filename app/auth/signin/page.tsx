@@ -57,7 +57,7 @@ export default function SignInPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
               <Database className="h-6 w-6 text-white" />
             </div>
-            <span className="ml-2 text-2xl font-bold text-gray-900">DataVault</span>
+            <span className="ml-2 text-2xl font-bold text-gray-900">Concentra</span>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
           <p className="text-gray-600">Sign in to your business account</p>

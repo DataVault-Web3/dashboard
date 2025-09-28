@@ -103,7 +103,7 @@ export default function DashboardClient() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
               <Database className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">DataVault</span>
+            <span className="text-xl font-bold text-gray-900">Concentra</span>
             <Badge variant="secondary" className="ml-2">Dashboard</Badge>
           </div>
           <div className="flex items-center space-x-4">
