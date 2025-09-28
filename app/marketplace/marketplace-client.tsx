@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useWeb3Auth } from "@/hooks/use-web3-auth";
 import { ConnectWalletButton } from "@/components/connect-wallet-button";
 import { DataPreviewDialog } from "@/components/data-preview-dialog";
+import { PaymentCompletionDialog } from "@/components/payment-completion-dialog";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { withPaymentInterceptor} from "x402-axios"
@@ -190,6 +191,8 @@ export default function MarketplaceClient() {
     type: "success" | "error" | "info";
     message: string;
   } | null>(null);
+  const [paymentCompletionData, setPaymentCompletionData] = useState<any>(null);
+  const [isPaymentCompletionOpen, setIsPaymentCompletionOpen] = useState(false);
 
   const filteredPlatforms = platforms.filter((platform) => {
     if (selectedPlatform !== "all" && platform.id !== selectedPlatform)
@@ -276,6 +279,13 @@ export default function MarketplaceClient() {
         dataset: dataset.title,
         content: response.data,
       });
+
+      // Set payment completion data and show dialog
+      setPaymentCompletionData({
+        content: response.data,
+        dataset: dataset.title,
+      });
+      setIsPaymentCompletionOpen(true);
     } catch (error) {
       console.error("Purchase failed:", error);
       
@@ -580,6 +590,13 @@ export default function MarketplaceClient() {
           onOpenChange={setIsPreviewOpen}
         />
       )}
+
+      {/* Payment Completion Dialog */}
+      <PaymentCompletionDialog
+        open={isPaymentCompletionOpen}
+        onOpenChange={setIsPaymentCompletionOpen}
+        data={paymentCompletionData}
+      />
     </div>
   );
 }

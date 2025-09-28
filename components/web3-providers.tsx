@@ -10,7 +10,7 @@ import {
 } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import {
-  polygonAmoy
+  polygonAmoy,baseSepolia
 } from 'wagmi/chains'
 import {
   QueryClientProvider,
@@ -30,7 +30,7 @@ export function Web3Providers({ children }: { children: React.ReactNode }) {
     const clientConfig = getDefaultConfig({
       appName: 'DataVault Business',
       projectId: 'hackathon-datavault-project-2024',
-      chains: [polygonAmoy],
+      chains: [polygonAmoy,baseSepolia],
       ssr: false, // Disable SSR for Web3
     })
     setConfig(clientConfig)
